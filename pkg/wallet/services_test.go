@@ -8,7 +8,7 @@ func TestService_RegisterAccount_success(t *testing.T) {
 	svc := Service{}
 	svc.RegisterAccount("+992915224442")
 
-	account, err := svc.FindAccountBy(1)
+	account, err := svc.FindAccountById(1)
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", account)
 	}
