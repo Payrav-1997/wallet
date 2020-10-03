@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	svc := &wallet.Services{}
+	svc := &wallet.Service{}
 	svc.RegisterAccount("+992915224442")
 	svc.FindAccountByIdmethod(1)
 	
