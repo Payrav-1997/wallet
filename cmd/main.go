@@ -7,6 +7,6 @@ import (
 func main() {
 	svc := &wallet.Service{}
 	svc.RegisterAccount("+992915224442")
-	svc.FindAccountByIdmethod(1)
+	svc.FindAccountByI(1)
 	
 }
