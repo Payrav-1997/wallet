@@ -34,7 +34,7 @@ func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
 	return account, nil
 }
 
-func (s *Service) FindAccountByIdmethod(accountID int64) (*types.Account, error) {
+func (s *Service) FindAccountById(accountID int64) (*types.Account, error) {
 	var account *types.Account
 	for _, acc := range s.accounts {
 		if acc.ID == accountID {
