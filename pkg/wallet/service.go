@@ -12,13 +12,13 @@ var (
 )
 
 
-type Services struct {
+type Service struct {
 	nextAccountID int64
 	accounts      []*types.Account
 	payments      []*types.Payment
 }
 
-func (s *Services) RegisterAccount(phone types.Phone) (*types.Account, error) {
+func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
 	for _, account := range s.accounts {
 		if account.Phone == phone {
 			return nil, ErrPhoneRegistered
@@ -34,7 +34,7 @@ func (s *Services) RegisterAccount(phone types.Phone) (*types.Account, error) {
 	return account, nil
 }
 
-func (s *Services) FindAccountByIdmethod(accountID int64) (*types.Account, error) {
+func (s *Service) FindAccountByIdmethod(accountID int64) (*types.Account, error) {
 	var account *types.Account
 	for _, acc := range s.accounts {
 		if acc.ID == accountID {

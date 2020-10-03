@@ -5,7 +5,7 @@ import (
 )
 
 func TestService_RegisterAccount_success(t *testing.T) {
-	svc := Services{}
+	svc := Service{}
 	svc.RegisterAccount("+992915224442")
 
 	account, err := svc.FindAccountByIdmethod(1)
@@ -15,7 +15,7 @@ func TestService_RegisterAccount_success(t *testing.T) {
 }
 
 func TestService_FindAccoundByIdmethod_notFound(t *testing.T) {
-	svc := Services{}
+	svc := Service{}
 	svc.RegisterAccount("+992915224442")
 
 	account, err := svc.FindAccountByIdmethod(2)
