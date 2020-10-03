@@ -14,7 +14,7 @@ func TestService_RegisterAccount_success(t *testing.T) {
 	}
 }
 
-func TestService_FindAccoundByIdmethod_notFound(t *testing.T) {
+func TestService_FindAccoundById_notFound(t *testing.T) {
 	svc := Service{}
 	svc.RegisterAccount("+992915224442")
 
