@@ -1,35 +1,25 @@
 package wallet
 
-import (
-	"github.com/Payrav-1997/wallet/pkg/wallet"
-	
-	"fmt"
+import (	
 	"testing"
-
 )
 
-func TestServices_RegisterAccount(t *testing.T) {
-	svc := &wallet.Services{}
-	account, err := svc.RegisterAccount("+992915224442")
-	if err != nil {
-		fmt.Println(account)
-	}
+func TestService_RegisterAccount_success(t *testing.T) {
+	svc := Services{}
+	svc.RegisterAccount("+992915224442")
 
-	account, err = svc.FindAccountByIdmethod(1)
+	account, err := svc.FindAccountByIdmethod(1)
 	if err != nil {
-		t.Errorf("\ngot > %v \nwant > nil", err)
+		t.Errorf("\ngot > %v \nwant > nil", account)
 	}
 }
 
-func TestServices_FindAccoundByIdmethod_notFound(t *testing.T) {
-	svc := &wallet.Services{}
-	account, err := svc.RegisterAccount("+992915224442")
-	if err != nil {
-		fmt.Println(account)
-	}
+func TestService_FindAccoundByIdmethod_notFound(t *testing.T) {
+	svc := Services{}
+	svc.RegisterAccount("+992915224442")
 
-	account, err = svc.FindAccountByIdmethod(2)
+	account, err := svc.FindAccountByIdmethod(2)
 	if err == nil {
-		t.Errorf("\ngot > %v \nwant > nil", err)
+		t.Errorf("\ngot > %v \nwant > nil", account)
 	}
 }

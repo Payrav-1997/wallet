@@ -34,26 +34,6 @@ func (s *Services) RegisterAccount(phone types.Phone) (*types.Account, error) {
 	return account, nil
 }
 
-func (s *Services) Deposit(accountID int64, amount types.Money) error {
-	if amount <= 0 {
-		return ErrAmountMustBePositive
-	}
-	var account *types.Account
-	for _, acc := range s.accounts {
-		if acc.ID == accountID {
-			account = acc
-			break
-		}
-	}
-	if account == nil {
-		return ErrPhoneRegistered
-	}
-
-	account.Balance += amount
-	return nil
-}
-
-
 func (s *Services) FindAccountByIdmethod(accountID int64) (*types.Account, error) {
 	var account *types.Account
 	for _, acc := range s.accounts {
