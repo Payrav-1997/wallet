@@ -112,6 +112,6 @@ func TestService_Repeat_success(t *testing.T) {
 
 	pay, err = SVC.Repeat(pay.ID)
 	if err != nil {
-		t.Errorf("Repeat(): Error(): не могу заплатить(%v): %v", pay.ID, err)
+		t.Errorf("Repeat(): Error(): can't pay (%v): %v", pay.ID, err)
 	}
 }
