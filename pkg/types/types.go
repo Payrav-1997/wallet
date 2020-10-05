@@ -11,9 +11,9 @@ type PaymentStatus string
 
 // Предопределеные статусы платежа.
 const (
-	StatusOk       PaymentStatus = "OK"
-	StatusFail     PaymentStatus = "FAIL"
-	StatusProgress PaymentStatus = "INPROGRESS"
+	PaymentStatusOk       PaymentStatus = "OK"
+	PaymentStatusFail     PaymentStatus = "FAIL"
+	PaymentStatusProgress PaymentStatus = "INPROGRESS"
 )
 
 // Payment представляет игформацию о платиже.
