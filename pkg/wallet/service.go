@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"github.com/Payrav-1997/wallet/pkg/types"
 )
 
@@ -9,7 +10,8 @@ var (
 	ErrPhoneRegistered      = errors.New("телефон уже зарегистрирован")         
 	ErrAmountMustBePositive = errors.New("сумма должна быть больше нуля") 
 	ErrAccountNotFound      = errors.New("аккаунт не найден")
-	ErrPaymentNotFound = errors.New("Платеж не найден")                
+	ErrPaymentNotFound = errors.New("Платеж не найден")   
+	ErrNotEnoughtBalance = errors.New("нет баланса")             
 )
 
 func (s *Service) Pay(accountID int64, amount types.Money, category types.PaymentCategory) (*types.Payment, error) {
@@ -42,7 +44,7 @@ func (s *Service) Pay(accountID int64, amount types.Money, category types.Paymen
 		AccountID: accountID,
 		Amount:    amount,
 		Category:  category,
-		Status:    types.PaymentStatusInProgress,
+		Status:    types.StatusProgress,
 	}
 
 	s.payments = append(s.payments, payment)
@@ -124,10 +126,11 @@ func (s *Service) Reject(paymentID string) error{
 		return err
 	}
 
-	acc, err := s.FindAccountByID(pay_ment.ID)
+	acc, err := s.FindAccountByID(pay_ment.AccountID)
 	if err != nil{
 		return err
 	}
-	pay_ment.Status = types.PaymentStatusFail
+	pay_ment.Status = types.StatusFail
 	acc.Balance += pay_ment.Amount
+	return nil
 }
