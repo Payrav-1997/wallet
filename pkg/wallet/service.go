@@ -44,7 +44,7 @@ func (s *Service) Pay(accountID int64, amount types.Money, category types.Paymen
 		AccountID: accountID,
 		Amount:    amount,
 		Category:  category,
-		Status:    types.PaymentStatusProgress,
+		Status:   types.PaymentStatusInProgress,
 	}
 
 	s.payments = append(s.payments, payment)

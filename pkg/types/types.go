@@ -13,7 +13,7 @@ type PaymentStatus string
 const (
 	PaymentStatusOk       PaymentStatus = "OK"
 	PaymentStatusFail     PaymentStatus = "FAIL"
-	PaymentStatusProgress PaymentStatus = "INPROGRESS"
+	PaymentStatusInProgress PaymentStatus = "INPROGRESS"
 )
 
 // Payment представляет игформацию о платиже.
