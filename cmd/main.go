@@ -1,12 +1,14 @@
 package main
 
 import (
-	"github.com/Payrav-1997/wallet/pkg/wallet"
+	//"github.com/Payrav-1997/wallet/pkg/wallet"
 )
 
 func main() {
-	svc := &wallet.Service{}
-	svc.RegisterAccount("+992915224442")
-	svc.FindAccountByID(1)
+	// svc := &wallet.Service{}
+	// svc.RegisterAccount("+992915224442")
+	// svc.FindAccountByID(1)
+	// svc.Pay("Caffe")
+	// svc.Reject("")
 
 }
