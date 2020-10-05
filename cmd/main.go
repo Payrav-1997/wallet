@@ -8,7 +8,6 @@ func main() {
 	// svc := &wallet.Service{}
 	// svc.RegisterAccount("+992915224442")
 	// svc.FindAccountByID(1)
-	// svc.Pay("Caffe")
-	// svc.Reject("")
+
 
 }

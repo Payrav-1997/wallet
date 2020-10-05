@@ -84,8 +84,6 @@ func TestService_Reject_fail(t *testing.T) {
 	}
 }
 
-
-
 func TestService_Repeat_success(t *testing.T) {
 	SVC := Service{}
 	SVC.RegisterAccount("+99291522444")
