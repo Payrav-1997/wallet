@@ -67,7 +67,7 @@ func TestService_Reject_fail(t *testing.T) {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	payment, err := SVC.Pay(account.ID, 100_00, "auto")
+	payment, err := SVC.Pay(account.ID, 100_00, "caffe")
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
@@ -77,7 +77,7 @@ func TestService_Reject_fail(t *testing.T) {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	editPayID := pay.ID + "mr.virus :)"
+	editPayID := pay.ID + "caffe"
 	err = SVC.Reject(editPayID)
 	if err == nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
