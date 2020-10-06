@@ -1,20 +1,22 @@
 package wallet
 
-import (	
+import (
 	"testing"
 )
 
 func TestService_RegisterAccount_success(t *testing.T) {
 	SVC := Service{}
 	SVC.RegisterAccount("+992915224442")
+
 	account, err := SVC.FindAccountByID(1)
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", account)
 	}
 }
 
-func TestService_FindAccoundById2_notFound(t *testing.T) {
+func TestService_FindAccoundById1_notFound(t *testing.T) {
 	SVC := Service{}
+	SVC.RegisterAccount("+992915224442")
 	SVC.RegisterAccount("+992915224442")
 
 	account, err := SVC.FindAccountByID(2)
@@ -23,20 +25,37 @@ func TestService_FindAccoundById2_notFound(t *testing.T) {
 	}
 }
 
-func TestService_Reject_success(t *testing.T){
-	SVC:= Service{}
+func TestDeposit(t *testing.T) {
+	SVC := Service{}
+
 	SVC.RegisterAccount("+992915224442")
 
-	account,err := SVC.FindAccountByID(1)
-	if err != nil{
-		t.Errorf("\ngot> %v \nwant > nil",err)
+	err := SVC.Deposit(1, 100_00)
+	if err != nil {
+		t.Error("Произошла ошибка при оплате")
 	}
+
+	account, err := SVC.FindAccountByID(1)
+	if err != nil {
+		t.Errorf("\ngot > %v \nwant > nil", account)
+	}
+}
+
+func TestService_Reject_success(t *testing.T) {
+	SVC := Service{}
+	SVC.RegisterAccount("+992915224442")
+
+	account, err := SVC.FindAccountByID(1)
+	if err != nil {
+		t.Errorf("\ngot > %v \nwant > nil", err)
+	}
+
 	err = SVC.Deposit(account.ID, 1000_00)
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	payment, err := SVC.Pay(account.ID, 100_00, "Caffe")
+	payment, err := SVC.Pay(account.ID, 100_00, "Cafe")
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
@@ -66,7 +85,7 @@ func TestService_Reject_fail(t *testing.T) {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	payment, err := SVC.Pay(account.ID, 100_00, "Caffe")
+	payment, err := SVC.Pay(account.ID, 100_00, "Cafe")
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
@@ -76,8 +95,8 @@ func TestService_Reject_fail(t *testing.T) {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	PayID := pay.ID + "caffe"
-	err = SVC.Reject(PayID)
+	editPayID := pay.ID + "mr.virus :)"
+	err = SVC.Reject(editPayID)
 	if err == nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
@@ -97,7 +116,7 @@ func TestService_Repeat_success(t *testing.T) {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	payment, err := SVC.Pay(account.ID, 100_00, "Caffe")
+	payment, err := SVC.Pay(account.ID, 100_00, "Cafe")
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
