@@ -84,32 +84,3 @@ func TestService_Reject_fail(t *testing.T) {
 	}
 }
 
-func TestService_Repeat_success(t *testing.T) {
-	SVC := Service{}
-	SVC.RegisterAccount("+99291522444")
-
-	account, err := SVC.FindAccountByID(1)
-	if err != nil {
-		t.Errorf("\ngot > %v \nwant > nil", err)
-	}
-
-	err = SVC.Deposit(account.ID, 1000_00)
-	if err != nil {
-		t.Errorf("\ngot > %v \nwant > nil", err)
-	}
-
-	payment, err := SVC.Pay(account.ID, 100_00, "Cafe")
-	if err != nil {
-		t.Errorf("\ngot > %v \nwant > nil", err)
-	}
-
-	pay, err := SVC.FindPaymentByID(payment.ID)
-	if err != nil {
-		t.Errorf("\ngot > %v \nwant > nil", err)
-	}
-
-	pay, err = SVC.Repeat(pay.ID)
-	if err != nil {
-		t.Errorf("Repeat(): Error(): can't pay (%v): %v", pay.ID, err)
-	}
-}
