@@ -1,6 +1,6 @@
 package wallet
 
-import (
+import (	
 	"testing"
 )
 
@@ -14,7 +14,7 @@ func TestService_RegisterAccount_success(t *testing.T) {
 	}
 }
 
-func TestService_FindAccoundById1_notFound(t *testing.T) {
+func TestService_FindAccoundByIdMetod_notFound(t *testing.T) {
 	SVC := Service{}
 	SVC.RegisterAccount("+992915224442")
 	SVC.RegisterAccount("+992915224442")

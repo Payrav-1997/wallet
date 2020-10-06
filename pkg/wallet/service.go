@@ -137,12 +137,12 @@ func (s *Service) Reject(paymentID string) error{
 
 
 func (s *Service) Repeat(paymentID string) (*types.Payment, error) {
-	pay_ment, err := s.FindPaymentByID(paymentID)
+	pay, err := s.FindPaymentByID(paymentID)
 	if err != nil {
 		return nil, err
 	}
 
-	payment, err := s.Pay(pay_ment.AccountID, pay_ment.Amount, pay_ment.Category)
+	payment, err := s.Pay(pay.AccountID, pay.Amount, pay.Category)
 	if err != nil {
 		return nil, err
 	}
