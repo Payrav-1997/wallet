@@ -11,7 +11,9 @@ var (
 	ErrAmountMustBePositive = errors.New("сумма должна быть больше нуля") 
 	ErrAccountNotFound      = errors.New("аккаунт не найден")
 	ErrPaymentNotFound = errors.New("Платеж не найден")   
-	ErrNotEnoughtBalance = errors.New("нет баланса")             
+	ErrNotEnoughtBalance = errors.New("нет баланса") 
+    ErrFavoriteNotFound = errors.New("favorite не найден")
+            
 )
 
 func (s *Service) Pay(accountID int64, amount types.Money, category types.PaymentCategory) (*types.Payment, error) {
@@ -55,6 +57,7 @@ type Service struct {
 	nextAccountID int64
 	accounts      []*types.Account
 	payments      []*types.Payment
+	favorites     []*types.Favorite
 }
 
 func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
@@ -148,6 +151,15 @@ func (s *Service) Repeat(paymentID string) (*types.Payment, error) {
 	}
 
 	return payment, nil
+}
+
+func (s *Service) FindFavoriteByID(favoriteID string) (*types.Favorite, error) {
+	for _, favorite := range s.favorites {
+		if favorite.ID == favoriteID {
+			return favorite, nil
+		}
+	}
+	return nil, ErrFavoriteNotFound
 }
 
 
