@@ -131,3 +131,33 @@ func TestService_Repeat_succes(t *testing.T) {
 		t.Errorf("Repeat(): Error(): can't pay (%v): %v", pay.ID, err)
 	}
 }
+
+
+func TestService_Favorite_succes(t *testing.T) {
+	SVC := Service{}
+
+	account, err := SVC.RegisterAccount("+992915224442")
+	if err != nil {
+		t.Errorf("RegisterAccount не возвратил ошибку nil , account => %v", account)
+	}
+
+	err = SVC.Deposit(account.ID, 100_00)
+	if err != nil {
+		t.Errorf("method Deposit не возвратил ошибку nil, error => %v", err)
+	}
+
+	payment, err := SVC.Pay(account.ID, 10_00, "auto")
+	if err != nil {
+		t.Errorf("Pay() Error() не могу платить за счет(%v): %v", account, err)
+	}
+
+	favorite, err := SVC.FavoritePayment(payment.ID, "megafon")
+	if err != nil {
+		t.Errorf("FavoritePayment() Error() не могу для favorite(%v): %v", favorite, err)
+	}
+
+	paymentFavorite, err := SVC.PayFromFavorite(favorite.ID)
+	if err != nil {
+		t.Errorf("PayFromFavorite() Error() не могу для favorite(%v): %v", paymentFavorite, err)
+	}
+}
