@@ -5,10 +5,9 @@ import (
 )
 
 func TestService_RegisterAccount_success(t *testing.T) {
-	svc := Service{}
-	svc.RegisterAccount("+992915224442")
-
-	account, err := svc.FindAccountByID(1)
+	SVC := Service{}
+	SVC.RegisterAccount("+992915224442")
+	account, err := SVC.FindAccountByID(1)
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", account)
 	}
@@ -86,7 +85,7 @@ func TestService_Reject_fail(t *testing.T) {
 
 func TestService_Repeat_success(t *testing.T) {
 	SVC := Service{}
-	SVC.RegisterAccount("+99291522444")
+	SVC.RegisterAccount("+992915224442")
 
 	account, err := SVC.FindAccountByID(1)
 	if err != nil {
@@ -98,7 +97,7 @@ func TestService_Repeat_success(t *testing.T) {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
 
-	payment, err := SVC.Pay(account.ID, 100_00, "Cafe")
+	payment, err := SVC.Pay(account.ID, 100_00, "Caffe")
 	if err != nil {
 		t.Errorf("\ngot > %v \nwant > nil", err)
 	}
