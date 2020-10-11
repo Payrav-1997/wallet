@@ -141,12 +141,12 @@ func TestService_Favorite_succes(t *testing.T) {
 		t.Errorf("RegisterAccount не возвратил ошибку nil , account => %v", account)
 	}
 
-	err = SVC.Deposit(account.ID, 100_00)
+	err = SVC.Deposit(account.ID, 1000_00)
 	if err != nil {
 		t.Errorf("method Deposit не возвратил ошибку nil, error => %v", err)
 	}
 
-	payment, err := SVC.Pay(account.ID, 10_00, "auto")
+	payment, err := SVC.Pay(account.ID, 100_00, "auto")
 	if err != nil {
 		t.Errorf("Pay() Error() не могу платить за счет(%v): %v", account, err)
 	}
