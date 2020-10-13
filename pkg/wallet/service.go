@@ -2,11 +2,14 @@ package wallet
 
 import (
 	"errors"
+	"io"
 	"log"
 	"os"
 	"strconv"
-	"github.com/google/uuid"
+	"strings"
+
 	"github.com/Payrav-1997/wallet/pkg/types"
+	"github.com/google/uuid"
 )
 
 var ErrPhoneRegistered = errors.New("phone already registered")
@@ -23,7 +26,6 @@ type Service struct {
 	payments      []*types.Payment
 	favorites     []*types.Favorite
 }
-
 
 func (s *Service) RegisterAccount(phone types.Phone) (*types.Account, error) {
 	for _, account := range s.accounts {
@@ -78,7 +80,6 @@ func (s *Service) Pay(accountID int64, amount types.Money, category types.Paymen
 	return payment, nil
 }
 
-
 func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	var account *types.Account
 
@@ -96,7 +97,6 @@ func (s *Service) FindAccountByID(accountID int64) (*types.Account, error) {
 	return account, nil
 }
 
-
 func (s *Service) FindPaymentByID(paymentID string) (*types.Payment, error) {
 	var payment *types.Payment
 
@@ -112,7 +112,6 @@ func (s *Service) FindPaymentByID(paymentID string) (*types.Payment, error) {
 
 	return payment, nil
 }
-
 
 func (s *Service) FindFavoriteByID(favoriteID string) (*types.Favorite, error) {
 	for _, favorite := range s.favorites {
@@ -137,7 +136,6 @@ func (s *Service) Deposit(accountID int64, amount types.Money) error {
 	account.Balance += amount
 	return nil
 }
-
 
 func (s *Service) Reject(paymentID string) error {
 	pay, err := s.FindPaymentByID(paymentID)
@@ -170,7 +168,6 @@ func (s *Service) Repeat(paymentID string) (*types.Payment, error) {
 	return payment, nil
 }
 
-
 func (s *Service) FavoritePayment(paymentID string, name string) (*types.Favorite, error) {
 	payment, err := s.FindPaymentByID(paymentID)
 
@@ -190,7 +187,6 @@ func (s *Service) FavoritePayment(paymentID string, name string) (*types.Favorit
 	s.favorites = append(s.favorites, newFavorite)
 	return newFavorite, nil
 }
-
 
 func (s *Service) PayFromFavorite(favoriteID string) (*types.Payment, error) {
 	favorite, err := s.FindFavoriteByID(favoriteID)
@@ -233,5 +229,74 @@ func (s *Service) ExportToFile(path string) error {
 		return ErrFileNotFound
 	}
 
+	return nil
+}
+func ReadFile(file *os.File) ([]byte, error) {
+	content := make([]byte, 0)
+	buf := make([]byte, 4)
+	for {
+		read, err := file.Read(buf)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		content = append(content, buf[:read]...)
+	}
+	return content, nil
+}
+
+func AddAccountToFile(file *os.File, account *types.Account) error {
+	content, err := ReadFile(file)
+	if err != nil {
+		return err
+	}
+	r := string(content)
+
+	ID := strconv.Itoa(int(account.ID))
+	Phone := string(account.Phone)
+	Balance := strconv.Itoa(int(account.Balance))
+
+	r += (ID + ";")
+	r += (Phone + ";")
+	r += (Balance + "|")
+	file.Write([]byte(r))
+	return nil
+}
+
+func (s *Service) ImportFromFile(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			log.Print(err)
+		}
+	}()
+
+	content, err := ReadFile(file)
+
+	var accounts []string = strings.Split(string(content), "|")
+
+	for _, account := range accounts[:len(accounts)-1] {
+		var vals []string = strings.Split(account, ";")
+		id, err := strconv.Atoi(vals[0])
+		if err != nil {
+			return err
+		}
+		balance, err := strconv.Atoi(vals[2])
+		if err != nil {
+			return err
+		}
+		newAccount := &types.Account{
+			ID:      int64(id),
+			Phone:   types.Phone(vals[1]),
+			Balance: types.Money(balance),
+		}
+		s.accounts = append(s.accounts, newAccount)
+	}
 	return nil
 }
