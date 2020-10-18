@@ -1,12 +1,14 @@
 package wallet
 
 import (
+	
 	"errors"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+	"bufio"
 
 	"github.com/Payrav-1997/wallet/pkg/types"
 	"github.com/google/uuid"
@@ -297,6 +299,56 @@ func (s *Service) ImportFromFile(path string) error {
 			Balance: types.Money(balance),
 		}
 		s.accounts = append(s.accounts, newAccount)
+	}
+	return nil
+}
+
+func (s *Service) Export(dir string)error{
+	if s.accounts != nil{
+		file,err := os.Create(dir + "/data/account.dump/")
+		if err !=nil{
+			log.Print(err)
+			return err
+		}
+			for _,account := range s.accounts{
+			acc := []byte(strconv.FormatInt(int64(account.ID),1)+string(";")+string(account.Phone)+string(";") + 
+			strconv.FormatInt(int64(account.Balance),1)+	string(";")+ string('\n'))
+				_,err = file.Write(acc)
+				if err != nil{
+					log.Print(err)
+					return err
+				}
+		}
+	
+	}else {
+		log.Print("Аккаунт не найден")
+	}
+	return nil
+}
+
+func (s *Service) Import(dir string)error{
+
+	src,err:= os.Open(dir + "/data/account.dump")
+	if err != nil{
+		log.Print(err)
+	}else{
+		defer func(){
+			if cerr:= src.Close();
+			cerr!=nil{
+				log.Print(cerr)
+			}
+		}()
+		reader := bufio.NewReader(src)
+		for{
+			read,err := reader.ReadString('\n')
+			if err == io.EOF{
+				log.Print(read)
+				break
+			}
+			if err != nil{
+				log.Print(err)
+			}
+		}
 	}
 	return nil
 }
