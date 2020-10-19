@@ -312,6 +312,147 @@ func TestService_PayFromFavorite_fail(t *testing.T) {
 	}
 }
 
+func TestService_ExportToFile(t *testing.T) {
+	s := newTestService()
+	_, err := s.RegisterAccount("+992000000001")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.RegisterAccount("+992000000002")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.RegisterAccount("+992000000003")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = s.ExportToFile("export.txt")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestService_ImportFromFile(t *testing.T) {
+	s := newTestService()
+
+	err := s.ImportFromFile("export.txt")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestService_Export(t *testing.T) {
+	s := newTestService()
+	_, err := s.RegisterAccount("+992000000001")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = s.Deposit(1, 1000000)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = s.Pay(1, 250000, "food")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	payment, err := s.Pay(1, 100000, "mobile")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.FavoritePayment(payment.ID, "for the phone balance")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.RegisterAccount("+992000000002")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = s.Deposit(2, 2000000)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = s.Pay(2, 750000, "mobile")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.RegisterAccount("+992000000003")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = s.Deposit(3, 3000000)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = s.Pay(3, 1250000, "auto")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	payment, err = s.Pay(3, 150000, "food")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.FavoritePayment(payment.ID, "Iskandar-Kebap")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	payment, err = s.Pay(3, 250000, "mobile")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	_, err = s.FavoritePayment(payment.ID, "Закинуть на баланс")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	err = s.Export("data")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestService_Import(t *testing.T) {
+	s := newTestService()
+	err := s.Import("data")
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func Data(s *testService) {
 	s.RegisterAccount("+992000000001")
 	s.Deposit(1, 10_000_00)
@@ -346,7 +487,7 @@ func TestService_ExportAccountHistory(t *testing.T) {
 
 func TestService_HistoryToFiles(t *testing.T) {
 	s := newTestService()
-	Data(s)
+    Data(s)
 
 	payments, err := s.ExportAccountHistory(1)
 	if err != nil {
@@ -361,11 +502,11 @@ func TestService_HistoryToFiles(t *testing.T) {
 
 func TestService_SumPayments(t *testing.T) {
 	s := newTestService()
-	Data(s)
+    Data(s)
 
 	sum := s.SumPayments(3)
 
-	if sum != 70 {
+	if sum !=70 {
 		t.Error(sum)
 	}
 }
