@@ -560,31 +560,33 @@ func (s *Service) HistoryToFiles(payments []types.Payment, dir string, records i
 	return nil
 }
 
-func (s *Service)SumPayments(goroutines int) types.Money {
-	
-	wg := sync.WaitGroup{}
-	wg.Add(goroutines) 
-	mu := sync.Mutex{} 
-	var sum types.Money
+func (s *Service) SumPayments(goroutines int) types.Money {
 
-	go func(){
-		wg.Done()
-		for _, payment := range s.payments {
-			pay := payment
-			sum += pay.Amount	
-		}
-		mu.Lock()
-		defer mu.Unlock()
-	}()
-	go func(){
-	    wg.Done() 
-		for _, payment := range s.payments {
-			pay := payment
-			sum += pay.Amount	
-		}
-		mu.Lock()
-		defer mu.Unlock()
-	}()
+	if goroutines < 1 {
+		goroutines = 1
+	}
+	pays := (len(s.payments) / goroutines) + 1
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+	sum := types.Money(0)
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		Sum := types.Money(0)
+		go func(iteration int) {
+			defer wg.Done()
+			pay := iteration * pays
+			pay1 := (iteration * pays) + pays
+			for i := pay; i < pay1; i++ {
+				if i > len(s.payments)-1 {
+					break
+				} 
+				sum += s.payments[i].Amount
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			Sum += sum
+		}(i)
+	}
 	wg.Wait()
 	return sum
 }
