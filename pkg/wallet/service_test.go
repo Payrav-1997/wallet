@@ -1,6 +1,7 @@
 package wallet
 
 import (	
+	"github.com/Payrav-1997/wallet/pkg/types"
 	"testing"
 )
 
@@ -159,5 +160,20 @@ func TestService_Favorite_succes(t *testing.T) {
 	paymentFavorite, err := SVC.PayFromFavorite(favorite.ID)
 	if err != nil {
 		t.Errorf("PayFromFavorite() Error() не могу для favorite(%v): %v", paymentFavorite, err)
+	}
+}
+
+
+func BenchmarkSumPayments(b *testing.B){
+	want := types.Money(0)
+	b.ResetTimer()
+	var service Service
+	for i := 0; i < b.N; i++ {
+		result := service.SumPayments(2)
+		b.StopTimer()
+		if result != types.Money(want) {
+			b.Fatalf("Invalid result got %v,want %v", result, want)
+		}
+		b.StartTimer()
 	}
 }
