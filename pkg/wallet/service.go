@@ -544,6 +544,12 @@ func (s *Service) HistoryToFiles(payments []types.Payment, dir string, records i
 				num++
 				str = fmt.Sprint(pay.ID) + ";" + fmt.Sprint(pay.AccountID) + ";" + fmt.Sprint(pay.Amount) + ";" + fmt.Sprint(pay.Category) + ";" + fmt.Sprint(pay.Status) + "\n"
 				_, _ = file.WriteString(str)
+				if num == records {
+					str = ""
+					num1++
+					num = 0
+					file.Close()
+				}
 			}
 
 		}
