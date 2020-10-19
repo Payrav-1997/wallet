@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	
@@ -506,4 +507,46 @@ func removeEndLine(balance string) string {
 	return strings.TrimRightFunc(balance, func(c rune) bool {
 		return c == '\r' || c == '\n'
 	})
+}
+
+func (s *Service) ExportAccountHistory(accountID int64) ([]types.Payment, error) {
+	var payments []types.Payment
+	for _, payment := range s.payments {
+		if payment.AccountID == accountID {
+			payments = append(payments, *payment)
+		}
+	}
+	
+	return payments, nil
+}
+
+func (s *Service) HistoryToFiles(payments []types.Payment, dir string, records int) error {
+	if len(payments) > 0 {
+		if len(payments) <= records {
+			file, _ := os.OpenFile(dir+"/payments.dump", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+			defer file.Close()
+
+			var str string
+			for _, pay := range payments {
+				str += fmt.Sprint(pay.ID) + ";" + fmt.Sprint(pay.AccountID) + ";" + fmt.Sprint(pay.Amount) + ";" + fmt.Sprint(pay.Category) + ";" + fmt.Sprint(pay.Status) + "\n"
+			}
+			file.WriteString(str)
+		} else {
+
+			var str string
+			num := 0
+			num1 := 1
+			var file *os.File
+			for _, pay := range payments {
+				if num == 0 {
+					file, _ = os.OpenFile(dir+"/payments"+fmt.Sprint(num1)+".dump", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+				}
+				num++
+				str = fmt.Sprint(pay.ID) + ";" + fmt.Sprint(pay.AccountID) + ";" + fmt.Sprint(pay.Amount) + ";" + fmt.Sprint(pay.Category) + ";" + fmt.Sprint(pay.Status) + "\n"
+				_, _ = file.WriteString(str)
+			}
+
+		}
+	}
+	return nil
 }
