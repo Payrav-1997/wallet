@@ -516,7 +516,9 @@ func (s *Service) ExportAccountHistory(accountID int64) ([]types.Payment, error)
 			payments = append(payments, *payment)
 		}
 	}
-	
+	if len(payments) <= 0 {
+		return nil, ErrAccountNotFound
+	}
 	return payments, nil
 }
 
