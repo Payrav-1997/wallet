@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"sync"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -557,4 +558,33 @@ func (s *Service) HistoryToFiles(payments []types.Payment, dir string, records i
 		}
 	}
 	return nil
+}
+
+func (s *Service)SumPayments(goroutines int) types.Money {
+	
+	wg := sync.WaitGroup{}
+	wg.Add(goroutines) 
+	mu := sync.Mutex{} 
+	var sum types.Money
+
+	go func(){
+		wg.Done()
+		for _, payment := range s.payments {
+			pay := payment
+			sum += pay.Amount	
+		}
+		mu.Lock()
+		defer mu.Unlock()
+	}()
+	go func(){
+	    wg.Done() 
+		for _, payment := range s.payments {
+			pay := payment
+			sum += pay.Amount	
+		}
+		mu.Lock()
+		defer mu.Unlock()
+	}()
+	wg.Wait()
+	return sum
 }
