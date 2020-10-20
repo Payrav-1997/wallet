@@ -1,18 +1,19 @@
 package wallet
 
 import (
-	"github.com/google/uuid"
+	"fmt"
 	"reflect"
 	"testing"
-	"fmt"
-	
+
+	"github.com/google/uuid"
 
 	"github.com/Payrav-1997/wallet/pkg/types"
 )
 
-type testService struct{
+type testService struct {
 	*Service
 }
+
 func newTestService() *testService {
 	return &testService{Service: &Service{}}
 }
@@ -290,7 +291,6 @@ func TestService_PayFromFavorite_success(t *testing.T) {
 	}
 }
 
-
 func TestService_PayFromFavorite_fail(t *testing.T) {
 	s := newTestService()
 	_, payments, err := s.addAccount(defaultTestAccount)
@@ -479,7 +479,6 @@ func Data(s *testService) {
 func TestService_ExportAccountHistory(t *testing.T) {
 	s := newTestService()
 	Data(s)
-
 	_, err := s.ExportAccountHistory(1)
 	if err != nil {
 		t.Error(err)
@@ -488,13 +487,11 @@ func TestService_ExportAccountHistory(t *testing.T) {
 
 func TestService_HistoryToFiles(t *testing.T) {
 	s := newTestService()
-    Data(s)
-
+	Data(s)
 	payments, err := s.ExportAccountHistory(1)
 	if err != nil {
 		t.Error(err)
 	}
-
 	err = s.HistoryToFiles(payments, "history", 3)
 	if err != nil {
 		t.Error(err)
@@ -503,11 +500,9 @@ func TestService_HistoryToFiles(t *testing.T) {
 
 func TestService_SumPayments(t *testing.T) {
 	s := newTestService()
-    Data(s)
-
+	Data(s)
 	sum := s.SumPayments(3)
-
-	if sum !=70 {
+	if sum != 70 {
 		t.Error(sum)
 	}
 }
@@ -515,9 +510,7 @@ func TestService_SumPayments(t *testing.T) {
 func BenchmarkSumPayments(b *testing.B) {
 	s := newTestService()
 	Data(s)
-
 	b.ResetTimer()
-
 	want := types.Money(70)
 	for i := 0; i < b.N; i++ {
 		result := s.SumPayments(2)
@@ -531,7 +524,6 @@ func BenchmarkSumPayments(b *testing.B) {
 func TestService_FilterPayments(t *testing.T) {
 	s := newTestService()
 	Data(s)
-
 	payments, err := s.FilterPayments(1, 2)
 	if err != nil {
 		t.Error(err)
@@ -553,3 +545,26 @@ func BenchmarkFilterPayments(b *testing.B) {
 	}
 }
 
+func TestService_FilterPaymentsByFn(t *testing.T) {
+	s := newTestService()
+	Data(s)
+	payments, err := s.FilterPaymentsByFn(FilterAuto, 6)
+	if err != nil {
+		t.Error(err)
+		t.Error(payments)
+	}
+}
+
+func BenchmarkFilterPaymentsByFn(b *testing.B) {
+	s := newTestService()
+	Data(s)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := s.FilterPaymentsByFn(FilterAuto, 6)
+		b.StopTimer()
+		if err != nil {
+			b.Fatal(err)
+		}
+		b.StartTimer()
+	}
+}

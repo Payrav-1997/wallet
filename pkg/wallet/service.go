@@ -631,3 +631,44 @@ func (s *Service) FilterPayments(accountID int64, goroutines int) ([]types.Payme
 	wg.Wait()
 	return payments, nil
 }
+
+func (s *Service) FilterPaymentsByFn(filter func(payment types.Payment) bool, goroutines int) ([]types.Payment, error) {
+
+	if goroutines < 1 {
+		goroutines = 1
+	}
+	pays := (len(s.payments) / goroutines) + 1
+
+	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
+	payments := make([]types.Payment, 0)
+
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		payment := make([]types.Payment, 0)
+
+		go func(i int) {
+			defer wg.Done()
+			pay := i * pays
+			pays := (i * pays) + pays
+			for i := pay; i < pays; i++ {
+				if i > len(s.payments)-1 {
+					break
+				} 
+				if filter(*s.payments[i]){
+					payment=append(payment,*s.payments[i])
+				}
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			payments = append(payments, payment...)
+		}(i)
+	}
+	wg.Wait()
+	return payments, nil
+}
+
+
+func FilterAuto(payment types.Payment) bool {
+	return payment.Category == "auto"
+}
