@@ -594,68 +594,40 @@ func (s *Service) SumPayments(goroutines int) types.Money {
 
 
 func (s *Service) FilterPayments(accountID int64, goroutines int) ([]types.Payment, error) {
+	_, err := s.FindAccountByID(accountID)
+	if err != nil {
+		return nil, err
+	}
+	if goroutines < 1 {
+		goroutines = 1
+	}
+	pays := (len(s.payments) / goroutines) + 1
 
-	account, err := s.FindAccountByID(accountID)
 	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
-	count := len(s.payments) / goroutines
-	var pay []types.Payment
-	if goroutines == 0 {
-		count = len(s.payments)
-	}
-	for i := 0; i < goroutines-1; i++ {
+	payments := make([]types.Payment, 0)
+
+	for i := 0; i < goroutines; i++ {
 		wg.Add(1)
-		go func(index int) {
+		payment := make([]types.Payment, 0)
+
+		go func(i int) {
 			defer wg.Done()
-			var pay []types.Payment
-			payments := s.payments[index*count : (index+1)*count]
-			for _, payment := range payments {
-				if payment.AccountID == account.ID {
-					pay = append(pay, types.Payment{
-						ID:        payment.ID,
-						AccountID: payment.AccountID,
-						Amount:    payment.Amount,
-						Category:  payment.Category,
-						Status:    payment.Status,
-					})
+			pay := i * pays
+			pays := (i * pays) + pays
+			for i := pay; i < pays; i++ {
+				if i > len(s.payments)-1 {
+					break
+				} 
+				if s.payments[i].AccountID == accountID {
+					payment = append(payment, *s.payments[i])
 				}
 			}
 			mu.Lock()
 			defer mu.Unlock()
-			pay  = append(pay, pay...)
-			
-
+			payments = append(payments, payment...)
 		}(i)
 	}
-	wg.Add(1)
-	num := 0
-	go func() {
-		defer wg.Done()
-		var pays []types.Payment
-		payments := s.payments[num*count:]
-		for _, payment := range payments {
-			if payment.AccountID == account.ID {
-				pays = append(pays, types.Payment{
-					ID:        payment.ID,
-					AccountID: payment.AccountID,
-					Amount:    payment.Amount,
-					Category:  payment.Category,
-					Status:    payment.Status,
-				})
-			}
-		}
-		mu.Lock()
-		defer mu.Unlock()
-		pay = append(pay, pay...)
-		
-
-	}()
 	wg.Wait()
-	if len(pay) == 0 {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	return pay, nil
+	return payments, nil
 }

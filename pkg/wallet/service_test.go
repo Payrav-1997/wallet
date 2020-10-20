@@ -542,9 +542,7 @@ func TestService_FilterPayments(t *testing.T) {
 func BenchmarkFilterPayments(b *testing.B) {
 	s := newTestService()
 	Data(s)
-
 	b.ResetTimer()
-
 	for i := 0; i < b.N; i++ {
 		_, err := s.FilterPayments(1, 2)
 		b.StopTimer()
