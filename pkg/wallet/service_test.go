@@ -290,6 +290,7 @@ func TestService_PayFromFavorite_success(t *testing.T) {
 	}
 }
 
+
 func TestService_PayFromFavorite_fail(t *testing.T) {
 	s := newTestService()
 	_, payments, err := s.addAccount(defaultTestAccount)
@@ -525,6 +526,16 @@ func BenchmarkSumPayments(b *testing.B) {
 			b.Fatalf("Invalid result, got %v, want %v", result, want)
 		}
 		b.StartTimer()
+	}
+}
+func TestService_FilterPayments(t *testing.T) {
+	s := newTestService()
+	Data(s)
+
+	payments, err := s.FilterPayments(1, 2)
+	if err != nil {
+		t.Error(err)
+		t.Error(payments)
 	}
 }
 
