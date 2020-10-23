@@ -1,19 +1,18 @@
 package wallet
 
 import (
-	"sync"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
-	
+	"sync"
+
+	"bufio"
 	"errors"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"strings"
-	"bufio"
-	
 
 	"github.com/Payrav-1997/wallet/pkg/types"
 	"github.com/google/uuid"
@@ -209,7 +208,6 @@ func (s *Service) PayFromFavorite(favoriteID string) (*types.Payment, error) {
 	return payment, nil
 }
 
-
 func ReadFile(file *os.File) ([]byte, error) {
 	content := make([]byte, 0)
 	buf := make([]byte, 4)
@@ -311,7 +309,7 @@ func (s *Service) ImportFromFile(path string) error {
 }
 
 func (s *Service) Export(dir string) error {
-	acc:= 0
+	acc := 0
 	for _, account := range s.accounts {
 		ID := strconv.FormatInt(account.ID, 10) + ";"
 		phone := string(account.Phone) + ";"
@@ -324,7 +322,6 @@ func (s *Service) Export(dir string) error {
 	}
 	log.Print("acc: ", acc)
 
-	
 	pay := 0
 	for _, payment := range s.payments {
 		ID := payment.ID + ";"
@@ -339,7 +336,6 @@ func (s *Service) Export(dir string) error {
 		pay++
 	}
 	log.Print("pay: ", pay)
-
 
 	fav := 0
 	for _, favorite := range s.favorites {
@@ -579,7 +575,7 @@ func (s *Service) SumPayments(goroutines int) types.Money {
 			for i := pay; i < pay1; i++ {
 				if i > len(s.payments)-1 {
 					break
-				} 
+				}
 				sum += s.payments[i].Amount
 			}
 			mu.Lock()
@@ -589,9 +585,8 @@ func (s *Service) SumPayments(goroutines int) types.Money {
 	}
 	wg.Wait()
 	return sum
-	
-}
 
+}
 
 func (s *Service) FilterPayments(accountID int64, goroutines int) ([]types.Payment, error) {
 	_, err := s.FindAccountByID(accountID)
@@ -618,7 +613,7 @@ func (s *Service) FilterPayments(accountID int64, goroutines int) ([]types.Payme
 			for i := pay; i < pays; i++ {
 				if i > len(s.payments)-1 {
 					break
-				} 
+				}
 				if s.payments[i].AccountID == accountID {
 					payment = append(payment, *s.payments[i])
 				}
@@ -654,9 +649,9 @@ func (s *Service) FilterPaymentsByFn(filter func(payment types.Payment) bool, go
 			for i := pay; i < pays; i++ {
 				if i > len(s.payments)-1 {
 					break
-				} 
-				if filter(*s.payments[i]){
-					payment=append(payment,*s.payments[i])
+				}
+				if filter(*s.payments[i]) {
+					payment = append(payment, *s.payments[i])
 				}
 			}
 			mu.Lock()
@@ -671,34 +666,32 @@ func FilterAuto(payment types.Payment) bool {
 	return payment.Category == "auto"
 }
 
-func  (s *Service) SumPaymentWithProgress()<-chan types.Progress{
-mon:= 1000_000
-	money :=  make([]types.Money,0)
+func (s *Service) SumPaymentsWithProgress() <-chan types.Progress {
+	mon := 1000_000
+	money := make([]types.Money, 0)
 	for _, pay := range s.payments {
-		money = append(money,pay.Amount)
+		money = append(money, pay.Amount)
 	}
 	wg := sync.WaitGroup{}
-	g := (len(money)+1)/mon
+	g := (len(money) + 1) / mon
 	chanMake := make(chan types.Progress)
 	for i := 0; i < g; i++ {
 		wg.Add(1)
-		go func(chanMake chan<- types.Progress,money []types.Money, p int){
+		go func(chanMake chan<- types.Progress, money []types.Money, p int) {
 			sum := 0
 			defer wg.Done()
-			for _, sum1 := range money{
-				sum+=int(sum1)
+			for _, sum1 := range money {
+				sum += int(sum1)
 			}
 			chanMake <- types.Progress{
 				Result: types.Money(sum),
 			}
-		}(chanMake,money,i)
+		}(chanMake, money, i)
 	}
-	go func(){
+	go func() {
 		defer close(chanMake)
 		wg.Wait()
 	}()
-		return chanMake
+	return chanMake
 
-}  
-	
-
+}
