@@ -1,8 +1,5 @@
 package types
 
-// Money представляет собой денежную сумму в минималных единиц 
-type Money int64
-
 // PaymentCategory представляет 
 type PaymentCategory string
 
@@ -41,4 +38,13 @@ type Favorite struct {
 	Name      string
 	Amount    Money
 	Category  PaymentCategory
+}
+
+
+// Money представляет собой денежную сумму в минималных единиц 
+type Money int64
+
+type Progress struct{
+	Part int
+	Result Money
 }

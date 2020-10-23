@@ -667,8 +667,38 @@ func (s *Service) FilterPaymentsByFn(filter func(payment types.Payment) bool, go
 	wg.Wait()
 	return payments, nil
 }
-
-
 func FilterAuto(payment types.Payment) bool {
 	return payment.Category == "auto"
 }
+
+func  (s *Service) SumPaymentWithProgress()<-chan types.Progress{
+mon:= 1000_000
+	money :=  make([]types.Money,0)
+	for _, pay := range s.payments {
+		money = append(money,pay.Amount)
+	}
+	wg := sync.WaitGroup{}
+	g := (len(money)+1)/mon
+	chanMake := make(chan types.Progress)
+	for i := 0; i < g; i++ {
+		wg.Add(1)
+		go func(chanMake chan<- types.Progress,money []types.Money, p int){
+			sum := 0
+			defer wg.Done()
+			for _, sum1 := range money{
+				sum+=int(sum1)
+			}
+			chanMake <- types.Progress{
+				Result: types.Money(sum),
+			}
+		}(chanMake,money,i)
+	}
+	go func(){
+		defer close(chanMake)
+		wg.Wait()
+	}()
+		return chanMake
+
+}  
+	
+
