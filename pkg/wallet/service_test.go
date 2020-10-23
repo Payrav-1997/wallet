@@ -569,7 +569,7 @@ func BenchmarkFilterPaymentsByFn(b *testing.B) {
 	}
 }
 
-func TestService_SumPaymentsWithProgress(t *testing.T){
+func TestService_SumPaymentWithProgress(t *testing.T){
 	s := newTestService()
 	for i := 0; i < 200_00; i++ {
 		pay := &types.Payment{
