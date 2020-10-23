@@ -667,7 +667,7 @@ func FilterAuto(payment types.Payment) bool {
 }
 
 func (s *Service) SumPaymentsWithProgress() <-chan types.Progress {
-	mon := 1000_000
+	mon := 1000000
 	money := make([]types.Money, 0)
 	for _, pay := range s.payments {
 		money = append(money, pay.Amount)
