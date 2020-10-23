@@ -568,3 +568,13 @@ func BenchmarkFilterPaymentsByFn(b *testing.B) {
 		b.StartTimer()
 	}
 }
+
+func TestService_SumPaymentsWithProgress(t *testing.T){
+	s := newTestService()
+	for i := 0; i < 200_00; i++ {
+		pay := &types.Payment{
+			Amount: types.Money(100),
+		}
+		s.payments = append(s.payments,pay)
+	}
+}
