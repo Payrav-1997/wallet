@@ -669,12 +669,16 @@ func FilterAuto(payment types.Payment) bool {
 func (s *Service) SumPaymentsWithProgress() <-chan types.Progress {
 	mon := 1000000
 	money := make([]types.Money, 0)
+	
 	for _, pay := range s.payments {
 		money = append(money, pay.Amount)
 	}
 	wg := sync.WaitGroup{}
 	g := (len(money) + 1) / mon
 	chanMake := make(chan types.Progress)
+	if g <= 0 {
+		g = 1
+	}
 	for i := 0; i < g; i++ {
 		wg.Add(1)
 		go func(chanMake chan<- types.Progress, money []types.Money, p int) {
